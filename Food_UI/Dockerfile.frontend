@@ -1,0 +1,90 @@
+# ─── Multi-stage Dockerfile for ALL Flowtap frontend apps ────────────────────
+# Usage (build-arg APP controls which app is built):
+#   docker build --build-arg APP=food     -t flowtap-food-ui    .
+#   docker build --build-arg APP=repair   -t flowtap-repair-ui  .
+#   docker build --build-arg APP=hotel    -t flowtap-hotel-ui   .
+#   docker build --build-arg APP=medical  -t flowtap-medical-ui .
+#   docker build --build-arg APP=jewellery -t flowtap-jewelry-ui .
+#
+# Also requires:
+#   --build-arg VITE_API_URL=https://api-food.example.com
+
+ARG APP=food
+ARG VITE_API_URL=http://localhost:5001
+
+# ── Stage 1: build ─────────────────────────────────────────────────────────────
+FROM node:20-alpine AS build
+ARG APP
+ARG VITE_API_URL
+
+WORKDIR /app
+
+# Copy workspace manifests for layer caching
+COPY package.json turbo.json tsconfig.base.json ./
+
+# Copy all package.json files for workspace resolution
+COPY packages/ui-core/package.json      packages/ui-core/
+COPY packages/store/package.json        packages/store/
+COPY packages/api-core/package.json     packages/api-core/
+COPY packages/shared/package.json       packages/shared/
+COPY packages/pages-core/package.json   packages/pages-core/
+COPY apps/${APP}/package.json           apps/${APP}/
+
+# Install all deps (workspace)
+RUN npm install
+
+# Copy all source code
+COPY packages/ packages/
+COPY apps/${APP}/ apps/${APP}/
+
+# Build shared packages first, then the app
+WORKDIR /app
+ENV VITE_API_URL=${VITE_API_URL}
+RUN npm run build -w @flowtap/shared 2>/dev/null || true
+RUN npm run build -w @flowtap/ui-core 2>/dev/null || true
+RUN npm run build -w @flowtap/store 2>/dev/null || true
+RUN npm run build -w @flowtap/api-core 2>/dev/null || true
+RUN npm run build -w @flowtap/pages-core 2>/dev/null || true
+RUN cd apps/${APP} && npx vite build
+
+# ── Stage 2: nginx serve ───────────────────────────────────────────────────────
+FROM nginx:alpine AS runtime
+ARG APP
+
+# Copy built files
+COPY --from=build /app/apps/${APP}/dist /usr/share/nginx/html
+
+# Nginx config — handles SPA routing (all paths → index.html)
+RUN cat > /etc/nginx/conf.d/default.conf <<'EOF'
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Gzip
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;
+
+    # Cache static assets aggressively
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # SPA fallback — every route → index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Health check
+    location /health {
+        return 200 "ok";
+        add_header Content-Type text/plain;
+    }
+}
+EOF
+
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost/health || exit 1
+CMD ["nginx", "-g", "daemon off;"]

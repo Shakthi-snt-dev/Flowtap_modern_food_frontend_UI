@@ -1,0 +1,741 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCENT COLOR TOKENS  (RGB channels — space-separated, no rgb() wrapper)
+   Tailwind outputs: rgb(var(--a-600) / <alpha>) so every bg-blue-*, text-blue-*,
+   ring-blue-* class responds to these at runtime without a rebuild.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Default accent: Blue */
+  --a-50:  239 246 255;
+  --a-100: 219 234 254;
+  --a-200: 191 219 254;
+  --a-300: 147 197 253;
+  --a-400:  96 165 250;
+  --a-500:  59 130 246;
+  --a-600:  37  99 235;
+  --a-700:  29  78 216;
+  --a-800:  30  64 175;
+  --a-900:  30  58 138;
+  --a-950:  23  37  84;
+
+  /* Border radius scale: 1=normal, 0.25=sharp, 2=rounded */
+  --tw-radius-scale: 1;
+
+  /* Font (overridden by ThemeContext via JS) */
+  --app-font: 'Inter', sans-serif;
+}
+
+[data-accent="purple"] {
+  --a-50:  245 243 255; --a-100: 237 233 254; --a-200: 221 214 254;
+  --a-300: 196 181 253; --a-400: 167 139 250; --a-500: 139  92 246;
+  --a-600: 124  58 237; --a-700: 109  40 217; --a-800:  91  33 182;
+  --a-900:  76  29 149; --a-950:  46  16 101;
+}
+[data-accent="green"] {
+  --a-50:  236 253 245; --a-100: 209 250 229; --a-200: 167 243 208;
+  --a-300: 110 231 183; --a-400:  52 211 153; --a-500:  16 185 129;
+  --a-600:   5 150 105; --a-700:   4 120  87; --a-800:   6  95  70;
+  --a-900:   6  78  59; --a-950:   2  44  34;
+}
+[data-accent="orange"] {
+  --a-50:  255 247 237; --a-100: 255 237 213; --a-200: 254 215 170;
+  --a-300: 253 186 116; --a-400: 251 146  60; --a-500: 249 115  22;
+  --a-600: 234  88  12; --a-700: 194  65  12; --a-800: 154  52  18;
+  --a-900: 124  45  18; --a-950:  67  20   7;
+}
+[data-accent="rose"] {
+  --a-50:  255 241 242; --a-100: 255 228 230; --a-200: 254 205 211;
+  --a-300: 253 164 175; --a-400: 251 113 133; --a-500: 244  63  94;
+  --a-600: 225  29  72; --a-700: 190  18  60; --a-800: 159  18  57;
+  --a-900: 136  19  55; --a-950:  76   5  25;
+}
+[data-accent="teal"] {
+  --a-50:  240 253 250; --a-100: 204 251 241; --a-200: 153 246 228;
+  --a-300:  94 234 212; --a-400:  45 212 191; --a-500:  20 184 166;
+  --a-600:  13 148 136; --a-700:  15 118 110; --a-800:  17  94  89;
+  --a-900:  19  78  74; --a-950:   4  47  46;
+}
+[data-accent="amber"] {
+  --a-50:  255 251 235; --a-100: 254 243 199; --a-200: 253 230 138;
+  --a-300: 252 211  77; --a-400: 251 191  36; --a-500: 245 158  11;
+  --a-600: 217 119   6; --a-700: 180  83   9; --a-800: 146  64  14;
+  --a-900: 120  53  15; --a-950:  69  26   3;
+}
+[data-accent="slate"] {
+  --a-50:  248 250 252; --a-100: 241 245 249; --a-200: 226 232 240;
+  --a-300: 203 213 225; --a-400: 148 163 184; --a-500: 100 116 139;
+  --a-600:  71  85 105; --a-700:  51  65  85; --a-800:  30  41  59;
+  --a-900:  15  23  42; --a-950:   2   6  23;
+}
+
+/* ── Food Orange — #FF8A24 primary brand palette ─────────────────────────── */
+[data-accent="food-orange"] {
+  --a-50:  255 244 232;  /* #FFF4E8 — light orange bg   */
+  --a-100: 255 232 203;  /* #FFE8CB                     */
+  --a-200: 255 209 154;  /* #FFD19A                     */
+  --a-300: 255 181 105;  /* #FFB569                     */
+  --a-400: 255 158  69;  /* #FF9E45                     */
+  --a-500: 255 138  36;  /* #FF8A24 — primary           */
+  --a-600: 232 116   0;  /* #E87400 — hover             */
+  --a-700: 196  95   0;  /* #C45F00                     */
+  --a-800: 160  76   0;  /* #A04C00                     */
+  --a-900: 122  58   0;  /* #7A3A00                     */
+  --a-950:  77  35   0;  /* #4D2300                     */
+}
+
+/* Border radius scale */
+[data-radius="sharp"]   { --tw-radius-scale: 0.25; }
+[data-radius="normal"]  { --tw-radius-scale: 1; }
+[data-radius="rounded"] { --tw-radius-scale: 2; }
+
+/* Font family applied via ThemeContext JS */
+body { font-family: var(--app-font, 'Inter', sans-serif); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLOR THEME TOKENS
+   Each theme defines CSS variables consumed by Sidebar + AppLayout.
+   The accent --a-* vars remain independent — users can mix any accent with
+   any color theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Default Light ────────────────────────────────────────────────────────── */
+:root {
+  --sidebar-bg:           #ffffff;
+  --sidebar-title:        #111827;
+  --sidebar-subtitle:     #6b7280;
+  --sidebar-text:         #4b5563;
+  --sidebar-text-muted:   #9ca3af;
+  --sidebar-active-bg:    rgb(var(--a-50));
+  --sidebar-active-text:  rgb(var(--a-600));
+  --sidebar-hover-bg:     #f3f4f6;
+  --sidebar-border:       #e5e7eb;
+  --sidebar-logo-bg:      rgb(var(--a-600));
+  --page-bg:              #f9fafb;
+
+  /* Header (TopNav) */
+  --header-bg:            #ffffff;
+  --header-border:        #e5e7eb;
+  --header-text:          #111827;
+  --header-hover-bg:      #f3f4f6;
+  --header-icon:          #6b7280;
+
+  /* Table */
+  --table-header-bg:      #f9fafb;
+  --table-header-text:    #4b5563;
+  --table-border:         #e5e7eb;
+  --table-row-hover:      #f9fafb;
+
+  /* Cards */
+  --card-border:          #e5e7eb;
+}
+
+/* ── Default Dark (only applies when no color theme is set) ──────────────── */
+.dark {
+  --sidebar-bg:           #111827;
+  --sidebar-title:        #f9fafb;
+  --sidebar-subtitle:     #9ca3af;
+  --sidebar-text:         #9ca3af;
+  --sidebar-text-muted:   #6b7280;
+  --sidebar-active-bg:    rgba(var(--a-600), 0.18);
+  --sidebar-active-text:  rgb(var(--a-400));
+  --sidebar-hover-bg:     #1f2937;
+  --sidebar-border:       #374151;
+  --sidebar-logo-bg:      rgb(var(--a-600));
+  --page-bg:              #030712;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAMED COLOR THEMES
+   These override sidebar + page variables regardless of dark/light toggle
+   (except midnight, which also forces page dark via ThemeContext setting
+   the .dark class on <html>).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Ocean — deep navy sidebar + soft blue page ───────────────────────────── */
+[data-color-theme="ocean"] {
+  --sidebar-bg:           #0c1f3f;
+  --sidebar-title:        #e0eeff;
+  --sidebar-subtitle:     #7badce;
+  --sidebar-text:         #93b8d5;
+  --sidebar-text-muted:   #6691b0;
+  --sidebar-active-bg:    rgba(99, 179, 237, 0.2);
+  --sidebar-active-text:  #7dd3fc;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.09);
+  --sidebar-logo-bg:      #1e4080;
+  --page-bg:              #eef6ff;
+}
+.dark[data-color-theme="ocean"] { --page-bg: #0a1628; }
+
+/* ── Forest — deep green sidebar + soft green page ───────────────────────── */
+[data-color-theme="forest"] {
+  --sidebar-bg:           #0a2218;
+  --sidebar-title:        #d1fae5;
+  --sidebar-subtitle:     #6cb898;
+  --sidebar-text:         #6db898;
+  --sidebar-text-muted:   #4d8a6e;
+  --sidebar-active-bg:    rgba(52, 211, 153, 0.18);
+  --sidebar-active-text:  #6ee7b7;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #065f46;
+  --page-bg:              #f0fdf4;
+}
+.dark[data-color-theme="forest"] { --page-bg: #071a10; }
+
+/* ── Midnight — near-black sidebar + very dark page (always dark) ─────────── */
+[data-color-theme="midnight"] {
+  --sidebar-bg:           #08080b;
+  --sidebar-title:        #e4e4e7;
+  --sidebar-subtitle:     #52525b;
+  --sidebar-text:         #71717a;
+  --sidebar-text-muted:   #52525b;
+  --sidebar-active-bg:    rgba(var(--a-600), 0.22);
+  --sidebar-active-text:  rgb(var(--a-400));
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.04);
+  --sidebar-border:       rgba(255, 255, 255, 0.06);
+  --sidebar-logo-bg:      rgb(var(--a-700));
+  --page-bg:              #141417;
+}
+
+/* ── Sunset — wine/burgundy sidebar + warm cream page ────────────────────── */
+[data-color-theme="sunset"] {
+  --sidebar-bg:           #3b0a14;
+  --sidebar-title:        #fde8ec;
+  --sidebar-subtitle:     #e08090;
+  --sidebar-text:         #f9a8b4;
+  --sidebar-text-muted:   #d08090;
+  --sidebar-active-bg:    rgba(251, 113, 133, 0.2);
+  --sidebar-active-text:  #fecdd3;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #7f1d1d;
+  --page-bg:              #fff5f7;
+}
+.dark[data-color-theme="sunset"] { --page-bg: #1c0608; }
+
+/* ── Lavender — deep violet sidebar + soft purple page ───────────────────── */
+[data-color-theme="lavender"] {
+  --sidebar-bg:           #1e0a47;
+  --sidebar-title:        #ede9fe;
+  --sidebar-subtitle:     #9b7fd4;
+  --sidebar-text:         #c4b5fd;
+  --sidebar-text-muted:   #8b6fd4;
+  --sidebar-active-bg:    rgba(167, 139, 250, 0.2);
+  --sidebar-active-text:  #ddd6fe;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #5b21b6;
+  --page-bg:              #faf5ff;
+}
+.dark[data-color-theme="lavender"] { --page-bg: #0e0520; }
+
+/* ── Aurora — dark teal sidebar + mint page ──────────────────────────────── */
+[data-color-theme="aurora"] {
+  --sidebar-bg:           #042f2e;
+  --sidebar-title:        #ccfbf1;
+  --sidebar-subtitle:     #2dd4bf;
+  --sidebar-text:         #5eead4;
+  --sidebar-text-muted:   #0d9488;
+  --sidebar-active-bg:    rgba(94, 234, 212, 0.18);
+  --sidebar-active-text:  #99f6e4;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #115e59;
+  --page-bg:              #f0fdfa;
+}
+.dark[data-color-theme="aurora"] { --page-bg: #021816; }
+
+/* ── Carbon — dark slate sidebar + clean off-white page ──────────────────── */
+[data-color-theme="carbon"] {
+  --sidebar-bg:           #0f172a;
+  --sidebar-title:        #f1f5f9;
+  --sidebar-subtitle:     #64748b;
+  --sidebar-text:         #94a3b8;
+  --sidebar-text-muted:   #64748b;
+  --sidebar-active-bg:    rgba(148, 163, 184, 0.12);
+  --sidebar-active-text:  #e2e8f0;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.05);
+  --sidebar-border:       rgba(255, 255, 255, 0.07);
+  --sidebar-logo-bg:      #1e293b;
+  --page-bg:              #f8fafc;
+}
+.dark[data-color-theme="carbon"] { --page-bg: #020617; }
+
+/* ── Rose — deep rose sidebar + blush page ───────────────────────────────── */
+[data-color-theme="rose"] {
+  --sidebar-bg:           #3d0a1e;
+  --sidebar-title:        #ffe4e8;
+  --sidebar-subtitle:     #d06070;
+  --sidebar-text:         #fda4af;
+  --sidebar-text-muted:   #d06070;
+  --sidebar-active-bg:    rgba(253, 164, 175, 0.2);
+  --sidebar-active-text:  #fecdd3;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #9f1239;
+  --page-bg:              #fff1f2;
+}
+.dark[data-color-theme="rose"] { --page-bg: #1c0408; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODERN GRADIENT THEMES
+   --sidebar-bg holds a full gradient string; the sidebar <aside> uses
+   `background: var(--sidebar-bg)` (not background-color) so gradients render.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Cosmic — deep space purple→blue (always dark) ───────────────────────── */
+[data-color-theme="cosmic"] {
+  --sidebar-bg:           linear-gradient(155deg, #0f0c29 0%, #302b63 55%, #24243e 100%);
+  --sidebar-title:        #e9d5ff;
+  --sidebar-subtitle:     #9b7fd4;
+  --sidebar-text:         #c4b5fd;
+  --sidebar-text-muted:   #7c3aed;
+  --sidebar-active-bg:    rgba(196, 181, 253, 0.18);
+  --sidebar-active-text:  #e9d5ff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #4c1d95;
+  --page-bg:              #1a1033;
+}
+
+/* ── Candy — hot pink→violet gradient + soft pink page ───────────────────── */
+[data-color-theme="candy"] {
+  --sidebar-bg:           linear-gradient(155deg, #4a0e8f 0%, #be185d 100%);
+  --sidebar-title:        #fdf4ff;
+  --sidebar-subtitle:     #f9a8d4;
+  --sidebar-text:         #f9a8d4;
+  --sidebar-text-muted:   #f472b6;
+  --sidebar-active-bg:    rgba(253, 164, 175, 0.22);
+  --sidebar-active-text:  #fde8ef;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.09);
+  --sidebar-border:       rgba(255, 255, 255, 0.12);
+  --sidebar-logo-bg:      #86198f;
+  --page-bg:              #fdf4ff;
+}
+.dark[data-color-theme="candy"] { --page-bg: #1a0020; }
+
+/* ── Ember — dark red→amber gradient + warm cream page ───────────────────── */
+[data-color-theme="ember"] {
+  --sidebar-bg:           linear-gradient(155deg, #7f1d1d 0%, #9a3412 60%, #78350f 100%);
+  --sidebar-title:        #fef9c3;
+  --sidebar-subtitle:     #fbbf24;
+  --sidebar-text:         #fed7aa;
+  --sidebar-text-muted:   #f97316;
+  --sidebar-active-bg:    rgba(254, 215, 170, 0.2);
+  --sidebar-active-text:  #fef3c7;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.08);
+  --sidebar-border:       rgba(255, 255, 255, 0.09);
+  --sidebar-logo-bg:      #b45309;
+  --page-bg:              #fff7ed;
+}
+.dark[data-color-theme="ember"] { --page-bg: #1c0a00; }
+
+/* ── Galaxy — navy→indigo gradient (always dark) ─────────────────────────── */
+[data-color-theme="galaxy"] {
+  --sidebar-bg:           linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+  --sidebar-title:        #e0e7ff;
+  --sidebar-subtitle:     #6366f1;
+  --sidebar-text:         #818cf8;
+  --sidebar-text-muted:   #4f46e5;
+  --sidebar-active-bg:    rgba(129, 140, 248, 0.18);
+  --sidebar-active-text:  #c7d2fe;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.05);
+  --sidebar-border:       rgba(255, 255, 255, 0.06);
+  --sidebar-logo-bg:      #3730a3;
+  --page-bg:              #020617;
+}
+
+/* ── Royal — deep indigo→blue gradient + soft lavender page ──────────────── */
+[data-color-theme="royal"] {
+  --sidebar-bg:           linear-gradient(155deg, #1e1b4b 0%, #1d4ed8 100%);
+  --sidebar-title:        #e0e7ff;
+  --sidebar-subtitle:     #a5b4fc;
+  --sidebar-text:         #a5b4fc;
+  --sidebar-text-muted:   #818cf8;
+  --sidebar-active-bg:    rgba(165, 180, 252, 0.2);
+  --sidebar-active-text:  #e0e7ff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.08);
+  --sidebar-border:       rgba(255, 255, 255, 0.1);
+  --sidebar-logo-bg:      #4338ca;
+  --page-bg:              #f5f3ff;
+}
+.dark[data-color-theme="royal"] { --page-bg: #050315; }
+
+/* ── Tropical — teal→emerald gradient + light cyan page ──────────────────── */
+[data-color-theme="tropical"] {
+  --sidebar-bg:           linear-gradient(155deg, #042f2e 0%, #065f46 100%);
+  --sidebar-title:        #ccfbf1;
+  --sidebar-subtitle:     #2dd4bf;
+  --sidebar-text:         #5eead4;
+  --sidebar-text-muted:   #0d9488;
+  --sidebar-active-bg:    rgba(94, 234, 212, 0.2);
+  --sidebar-active-text:  #99f6e4;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #0f766e;
+  --page-bg:              #ecfeff;
+}
+.dark[data-color-theme="tropical"] { --page-bg: #021816; }
+
+/* ── Golden — espresso→amber gradient + warm amber page ──────────────────── */
+[data-color-theme="golden"] {
+  --sidebar-bg:           linear-gradient(155deg, #1c1008 0%, #451a03 55%, #78350f 100%);
+  --sidebar-title:        #fef9c3;
+  --sidebar-subtitle:     #f59e0b;
+  --sidebar-text:         #fde68a;
+  --sidebar-text-muted:   #d97706;
+  --sidebar-active-bg:    rgba(253, 230, 138, 0.18);
+  --sidebar-active-text:  #fef9c3;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #92400e;
+  --page-bg:              #fffbeb;
+}
+.dark[data-color-theme="golden"] { --page-bg: #0c0700; }
+
+/* ── Neon — ultra dark + electric cyan (always dark) ─────────────────────── */
+[data-color-theme="neon"] {
+  --sidebar-bg:           linear-gradient(180deg, #050508 0%, #0a0f1e 100%);
+  --sidebar-title:        #e0f2fe;
+  --sidebar-subtitle:     #22d3ee;
+  --sidebar-text:         #67e8f9;
+  --sidebar-text-muted:   #0e7490;
+  --sidebar-active-bg:    rgba(34, 211, 238, 0.15);
+  --sidebar-active-text:  #a5f3fc;
+  --sidebar-hover-bg:     rgba(34, 211, 238, 0.07);
+  --sidebar-border:       rgba(34, 211, 238, 0.12);
+  --sidebar-logo-bg:      #0e7490;
+  --page-bg:              #030712;
+}
+
+/* ── Obsidian — ultra-dark purple gradient (always dark) ─────────────────── */
+[data-color-theme="obsidian"] {
+  --sidebar-bg:           linear-gradient(180deg, #0c0a1e 0%, #16113a 60%, #0c0a1e 100%);
+  --sidebar-title:        #ddd6fe;
+  --sidebar-subtitle:     #5b21b6;
+  --sidebar-text:         #7c3aed;
+  --sidebar-text-muted:   #4c1d95;
+  --sidebar-active-bg:    rgba(124, 58, 237, 0.2);
+  --sidebar-active-text:  #c4b5fd;
+  --sidebar-hover-bg:     rgba(124, 58, 237, 0.08);
+  --sidebar-border:       rgba(124, 58, 237, 0.15);
+  --sidebar-logo-bg:      #4c1d95;
+  --page-bg:              #0c0a1e;
+}
+
+/* ── Sakura — deep rose→violet gradient + soft petal page ────────────────── */
+[data-color-theme="sakura"] {
+  --sidebar-bg:           linear-gradient(155deg, #3d0a1e 0%, #581c87 100%);
+  --sidebar-title:        #fce7f3;
+  --sidebar-subtitle:     #e879f9;
+  --sidebar-text:         #f9a8d4;
+  --sidebar-text-muted:   #db2777;
+  --sidebar-active-bg:    rgba(249, 168, 212, 0.2);
+  --sidebar-active-text:  #fbcfe8;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.08);
+  --sidebar-border:       rgba(255, 255, 255, 0.09);
+  --sidebar-logo-bg:      #7e22ce;
+  --page-bg:              #fdf4ff;
+}
+.dark[data-color-theme="sakura"] { --page-bg: #1a0028; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RED TONE THEMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Crimson — blood-red gradient (always dark) ───────────────────────────── */
+[data-color-theme="crimson"] {
+  --sidebar-bg:           linear-gradient(155deg, #090000 0%, #3d0000 35%, #7f1d1d 70%, #450a0a 100%);
+  --sidebar-title:        #fecaca;
+  --sidebar-subtitle:     #f87171;
+  --sidebar-text:         #fca5a5;
+  --sidebar-text-muted:   #dc2626;
+  --sidebar-active-bg:    rgba(252, 165, 165, 0.18);
+  --sidebar-active-text:  #fed7aa;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 100, 100, 0.15);
+  --sidebar-logo-bg:      #991b1b;
+  --page-bg:              #0a0000;
+}
+
+/* ── Scarlet — vivid red gradient + warm white page ──────────────────────── */
+[data-color-theme="scarlet"] {
+  --sidebar-bg:           linear-gradient(155deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+  --sidebar-title:        #fff1f2;
+  --sidebar-subtitle:     #fecdd3;
+  --sidebar-text:         #fecdd3;
+  --sidebar-text-muted:   #fda4af;
+  --sidebar-active-bg:    rgba(255, 255, 255, 0.2);
+  --sidebar-active-text:  #ffffff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.12);
+  --sidebar-border:       rgba(255, 255, 255, 0.15);
+  --sidebar-logo-bg:      #7f1d1d;
+  --page-bg:              #fff5f5;
+}
+.dark[data-color-theme="scarlet"] { --page-bg: #1c0000; }
+
+/* ── Ruby — deep ruby→crimson gradient + soft warm page ──────────────────── */
+[data-color-theme="ruby"] {
+  --sidebar-bg:           linear-gradient(155deg, #2d0000 0%, #7f1d1d 45%, #991b1b 75%, #450a0a 100%);
+  --sidebar-title:        #ffe4e6;
+  --sidebar-subtitle:     #fda4af;
+  --sidebar-text:         #fda4af;
+  --sidebar-text-muted:   #fb7185;
+  --sidebar-active-bg:    rgba(253, 164, 175, 0.2);
+  --sidebar-active-text:  #fecdd3;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.08);
+  --sidebar-border:       rgba(255, 255, 255, 0.09);
+  --sidebar-logo-bg:      #9f1239;
+  --page-bg:              #fff1f2;
+}
+.dark[data-color-theme="ruby"] { --page-bg: #1a000a; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL THEMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Executive — dark charcoal gradient + clean off-white page ───────────── */
+[data-color-theme="executive"] {
+  --sidebar-bg:           linear-gradient(155deg, #111827 0%, #1f2937 50%, #111827 100%);
+  --sidebar-title:        #f9fafb;
+  --sidebar-subtitle:     #9ca3af;
+  --sidebar-text:         #d1d5db;
+  --sidebar-text-muted:   #6b7280;
+  --sidebar-active-bg:    rgba(209, 213, 219, 0.12);
+  --sidebar-active-text:  #f9fafb;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.06);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #374151;
+  --page-bg:              #fafafa;
+}
+.dark[data-color-theme="executive"] { --page-bg: #0a0c10; }
+
+/* ── Corporate — dark blue-slate gradient + soft blue-white page ─────────── */
+[data-color-theme="corporate"] {
+  --sidebar-bg:           linear-gradient(155deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  --sidebar-title:        #e0f2fe;
+  --sidebar-subtitle:     #7dd3fc;
+  --sidebar-text:         #bae6fd;
+  --sidebar-text-muted:   #38bdf8;
+  --sidebar-active-bg:    rgba(186, 230, 253, 0.18);
+  --sidebar-active-text:  #e0f2fe;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-logo-bg:      #0369a1;
+  --page-bg:              #f0f7ff;
+}
+.dark[data-color-theme="corporate"] { --page-bg: #030c18; }
+
+/* ── Noir — pure matte black (always dark) ───────────────────────────────── */
+[data-color-theme="noir"] {
+  --sidebar-bg:           linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+  --sidebar-title:        #e5e5e5;
+  --sidebar-subtitle:     #525252;
+  --sidebar-text:         #737373;
+  --sidebar-text-muted:   #404040;
+  --sidebar-active-bg:    rgba(229, 229, 229, 0.1);
+  --sidebar-active-text:  #e5e5e5;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.04);
+  --sidebar-border:       rgba(255, 255, 255, 0.06);
+  --sidebar-logo-bg:      #262626;
+  --page-bg:              #0a0a0a;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   METALLIC & SHINING THEMES
+   Uses light-streak pattern: dark→mid→bright→mid→dark for metallic sheen.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Steel — dark steel with light-streak shine + clean page ─────────────── */
+[data-color-theme="steel"] {
+  --sidebar-bg:           linear-gradient(120deg, #1c2536 0%, #2d3a4f 30%, #4a5568 50%, #2d3a4f 70%, #1c2536 100%);
+  --sidebar-title:        #e2e8f0;
+  --sidebar-subtitle:     #94a3b8;
+  --sidebar-text:         #cbd5e1;
+  --sidebar-text-muted:   #64748b;
+  --sidebar-active-bg:    rgba(203, 213, 225, 0.15);
+  --sidebar-active-text:  #f1f5f9;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.09);
+  --sidebar-logo-bg:      #334155;
+  --page-bg:              #f7f8fc;
+}
+.dark[data-color-theme="steel"] { --page-bg: #080c14; }
+
+/* ── Silver — shining silver gradient with bright highlight + light page ──── */
+[data-color-theme="silver"] {
+  --sidebar-bg:           linear-gradient(135deg, #334155 0%, #475569 30%, #94a3b8 50%, #475569 70%, #334155 100%);
+  --sidebar-title:        #f8fafc;
+  --sidebar-subtitle:     #cbd5e1;
+  --sidebar-text:         #e2e8f0;
+  --sidebar-text-muted:   #94a3b8;
+  --sidebar-active-bg:    rgba(248, 250, 252, 0.2);
+  --sidebar-active-text:  #ffffff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.1);
+  --sidebar-border:       rgba(255, 255, 255, 0.12);
+  --sidebar-logo-bg:      #475569;
+  --page-bg:              #f1f5f9;
+}
+.dark[data-color-theme="silver"] { --page-bg: #0b0f17; }
+
+/* ── Chrome — dark chrome gradient with metallic sheen + off-white page ───── */
+[data-color-theme="chrome"] {
+  --sidebar-bg:           linear-gradient(135deg, #232526 0%, #3d3d3d 30%, #6b6b6b 50%, #3d3d3d 70%, #232526 100%);
+  --sidebar-title:        #f5f5f5;
+  --sidebar-subtitle:     #a3a3a3;
+  --sidebar-text:         #d4d4d4;
+  --sidebar-text-muted:   #737373;
+  --sidebar-active-bg:    rgba(212, 212, 212, 0.15);
+  --sidebar-active-text:  #fafafa;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.07);
+  --sidebar-border:       rgba(255, 255, 255, 0.1);
+  --sidebar-logo-bg:      #525252;
+  --page-bg:              #f8f9fa;
+}
+.dark[data-color-theme="chrome"] { --page-bg: #0d0d0d; }
+
+/* ── Titanium — dark titanium blue-gray gradient + soft page ─────────────── */
+[data-color-theme="titanium"] {
+  --sidebar-bg:           linear-gradient(155deg, #0a0e1a 0%, #151d2e 25%, #1e2a42 50%, #263450 70%, #151d2e 85%, #0a0e1a 100%);
+  --sidebar-title:        #dbeafe;
+  --sidebar-subtitle:     #60a5fa;
+  --sidebar-text:         #93c5fd;
+  --sidebar-text-muted:   #3b82f6;
+  --sidebar-active-bg:    rgba(147, 197, 253, 0.15);
+  --sidebar-active-text:  #dbeafe;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.06);
+  --sidebar-border:       rgba(96, 165, 250, 0.12);
+  --sidebar-logo-bg:      #1d4ed8;
+  --page-bg:              #f8fafc;
+}
+.dark[data-color-theme="titanium"] { --page-bg: #060810; }
+
+/* ── Blue Pure — vivid blue gradient sidebar + pale blue page ────────────── */
+[data-color-theme="blue-pure"] {
+  --sidebar-bg:           linear-gradient(155deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+  --sidebar-title:        #dbeafe;
+  --sidebar-subtitle:     #93c5fd;
+  --sidebar-text:         #bfdbfe;
+  --sidebar-text-muted:   #60a5fa;
+  --sidebar-active-bg:    rgba(191, 219, 254, 0.22);
+  --sidebar-active-text:  #eff6ff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.10);
+  --sidebar-border:       rgba(255, 255, 255, 0.14);
+  --sidebar-logo-bg:      #1e3a8a;
+  --page-bg:              #eff6ff;
+}
+.dark[data-color-theme="blue-pure"] { --page-bg: #0a1628; }
+
+/* ── Angel White — soft indigo→white gradient + near-white page ──────────── */
+[data-color-theme="angel-white"] {
+  --sidebar-bg:           linear-gradient(155deg, #e0e7ff 0%, #f0f9ff 50%, #ffffff 100%);
+  --sidebar-title:        #312e81;
+  --sidebar-subtitle:     #6366f1;
+  --sidebar-text:         #4f46e5;
+  --sidebar-text-muted:   #818cf8;
+  --sidebar-active-bg:    rgba(99, 102, 241, 0.12);
+  --sidebar-active-text:  #3730a3;
+  --sidebar-hover-bg:     rgba(99, 102, 241, 0.07);
+  --sidebar-border:       rgba(99, 102, 241, 0.15);
+  --sidebar-logo-bg:      #4f46e5;
+  --page-bg:              #f8faff;
+}
+.dark[data-color-theme="angel-white"] { --page-bg: #0e0c2e; }
+
+/* ── Slate Grey — cool slate gradient sidebar + light grey page ──────────── */
+[data-color-theme="slate-grey"] {
+  --sidebar-bg:           linear-gradient(155deg, #334155 0%, #475569 50%, #64748b 100%);
+  --sidebar-title:        #f1f5f9;
+  --sidebar-subtitle:     #cbd5e1;
+  --sidebar-text:         #e2e8f0;
+  --sidebar-text-muted:   #94a3b8;
+  --sidebar-active-bg:    rgba(241, 245, 249, 0.18);
+  --sidebar-active-text:  #ffffff;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.09);
+  --sidebar-border:       rgba(255, 255, 255, 0.10);
+  --sidebar-logo-bg:      #1e293b;
+  --page-bg:              #f1f5f9;
+}
+.dark[data-color-theme="slate-grey"] { --page-bg: #0b0f17; }
+
+/* ── Jet Black — pure black gradient (always dark) ───────────────────────── */
+[data-color-theme="jet-black"] {
+  --sidebar-bg:           linear-gradient(155deg, #000000 0%, #0a0a0a 60%, #18181b 100%);
+  --sidebar-title:        #e4e4e7;
+  --sidebar-subtitle:     #71717a;
+  --sidebar-text:         #a1a1aa;
+  --sidebar-text-muted:   #52525b;
+  --sidebar-active-bg:    rgba(161, 161, 170, 0.12);
+  --sidebar-active-text:  #f4f4f5;
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.04);
+  --sidebar-border:       rgba(255, 255, 255, 0.07);
+  --sidebar-logo-bg:      #27272a;
+  --page-bg:              #09090b;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOOD INDUSTRY THEME
+   White sidebar with orange active states + warm grid page background.
+   Pair with data-accent="food-orange" for full Food brand experience.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-color-theme="food-light"] {
+  --sidebar-bg:           #FFFFFF;
+  --sidebar-title:        #2D3748;
+  --sidebar-subtitle:     #718096;
+  --sidebar-text:         #4A5568;
+  --sidebar-text-muted:   #718096;
+  --sidebar-active-bg:    #FF8A24;
+  --sidebar-active-text:  #FFFFFF;
+  --sidebar-hover-bg:     #FFF4E8;
+  --sidebar-border:       #FFD8B0;
+  --sidebar-logo-bg:      #FF8A24;
+  --page-bg:              #FFF4E8;
+
+  /* Header — white bar (orange accents on icons/interactions) */
+  --header-bg:            #FFFFFF;
+  --header-border:        #FFD8B0;
+  --header-text:          #2D3748;
+  --header-hover-bg:      #FFF4E8;
+  --header-icon:          #718096;
+
+  /* Table — orange header */
+  --table-header-bg:      #FF8A24;
+  --table-header-text:    #FFFFFF;
+  --table-border:         #FFD8B0;
+  --table-row-hover:      #FFF8F1;
+
+  /* Cards — warm orange border */
+  --card-border:          #FFD8B0;
+}
+
+/* Grid pattern on page background for food-light theme */
+[data-color-theme="food-light"] body,
+[data-color-theme="food-light"] #root {
+  background-color: #FFF4E8;
+  background-image:
+    linear-gradient(#F8EBDD 1px, transparent 1px),
+    linear-gradient(90deg, #F8EBDD 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  * { box-sizing: border-box; }
+  body { @apply text-gray-900 bg-[var(--page-bg)] dark:text-gray-100; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-600 rounded-full; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

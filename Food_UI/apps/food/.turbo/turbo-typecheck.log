@@ -1,0 +1,6 @@
+$ tsc --noEmit
+src/App.tsx(147,38): error TS2322: Type '{ label: string; path: string; icon: LucideIcon; }[]' is not assignable to type 'NavItem[]'.
+  Type '{ label: string; path: string; icon: LucideIcon; }' is not assignable to type 'NavItem'.
+    Types of property 'icon' are incompatible.
+      Type 'LucideIcon' is not assignable to type 'ReactNode'.
+[ELIFECYCLE] Command failed with exit code 2.

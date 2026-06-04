@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html lang="en" data-color-theme="food-light" data-accent="food-orange" data-radius="normal" data-density="comfortable">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flowtap Food</title>
+    <!-- Force food theme before JS loads — prevents any flash of wrong colors -->
+    <script>
+      try {
+        // Always food-orange accent for this industry app
+        // Reset any stale non-food accent (blue, orange, purple etc.)
+        var NON_FOOD = ['blue','purple','green','orange','rose','teal','amber','slate']
+        var ac = localStorage.getItem('accentColor')
+        if (!ac || NON_FOOD.indexOf(ac) !== -1) {
+          ac = 'food-orange'
+          localStorage.setItem('accentColor', 'food-orange')
+        }
+        var ct = localStorage.getItem('colorTheme')
+        if (!ct || ct === 'default') {
+          ct = 'food-light'
+          localStorage.setItem('colorTheme', 'food-light')
+        }
+        var th = localStorage.getItem('theme') || 'light'
+        document.documentElement.setAttribute('data-color-theme', ct)
+        document.documentElement.setAttribute('data-accent', ac)
+        if (th === 'dark') document.documentElement.classList.add('dark')
+      } catch(e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
